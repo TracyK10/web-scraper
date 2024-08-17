@@ -1,12 +1,13 @@
 import puppeteer from "puppeteer";
 import { randomDelay } from "../utils/randomDelay";
+import { getRandomUserAgent } from "../utils/userAgent";
 
 export const puppeteerScraper = async (url: string): Promise<void> => {
   const browser = await puppeteer.launch({ headless: true });
   const page = await browser.newPage();
 
   try {
-    const userAgent = process.env.USER_AGENT || 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3';
+    const userAgent = getRandomUserAgent();
     await page.setUserAgent(userAgent);
     await page.goto(url, { waitUntil: "networkidle2" });
 
