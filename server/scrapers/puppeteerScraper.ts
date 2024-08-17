@@ -1,6 +1,9 @@
-import puppeteer from "puppeteer";
+import puppeteer from "puppeteer-extra";
+import StealthPlugin from "puppeteer-extra-plugin-stealth";
 import { randomDelay } from "../utils/randomDelay";
 import { getRandomUserAgent } from "../utils/userAgent";
+
+puppeteer.use(StealthPlugin());
 
 export const puppeteerScraper = async (url: string): Promise<void> => {
   const browser = await puppeteer.launch({ headless: true });
