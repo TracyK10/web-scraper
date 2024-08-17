@@ -6,6 +6,7 @@ export async function collectData(url: string): Promise<void> {
   } catch (error) {
     if (error instanceof Error) {
       console.error("Data collector error:", error.message);
+      throw error;
     } else {
       console.error("Unknown Data Collector error:", error);
     }
