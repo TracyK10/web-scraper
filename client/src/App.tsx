@@ -10,15 +10,75 @@ const categories = {
   Education: ['Online learning platforms', 'Educational policy changes']
 };
 
+const SkeletonLoader = () => (
+  <div className="animate-pulse space-y-4">
+    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+    <div className="h-4 bg-gray-200 rounded"></div>
+    <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+  </div>
+);
+
+const Pagination = ({ currentPage, setCurrentPage, totalResults, resultsPerPage }: {
+  currentPage: number;
+  setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
+  totalResults: number;
+  resultsPerPage: number;
+}) => (
+  <div className="flex justify-center mt-4">
+    <button
+      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+      disabled={currentPage === 1}
+      className="px-4 py-2 border rounded-l-md"
+    >
+      Previous
+    </button>
+    <button
+      onClick={() => setCurrentPage(prev => prev + 1)}
+      disabled={currentPage * resultsPerPage >= totalResults}
+      className="px-4 py-2 border rounded-r-md"
+    >
+      Next
+    </button>
+  </div>
+);
+
+const Dashboard = ({ results }: { results: Array<{ category: string }> }) => {
+  const categoryCount = results.reduce((acc, result) => {
+    acc[result.category] = (acc[result.category] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  return (
+    <div className="mt-8">
+      <h2 className="text-2xl font-bold mb-4">Analytics Dashboard</h2>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <h3 className="text-xl font-semibold mb-2">Total Scrapes</h3>
+          <p className="text-3xl font-bold">{results.length}</p>
+        </div>
+        <div>
+          <h3 className="text-xl font-semibold mb-2">Categories</h3>
+          {Object.entries(categoryCount).map(([category, count]) => (
+            <p key={category}>{category}: {count}</p>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 function App() {
   const [url, setUrl] = useState("");
-  const [result, setResult] = useState<{
+  const [results, setResults] = useState<Array<{
     title: string;
     url: string;
     category: string;
     products: { name: string; category: string }[];
-  } | null>(null);
+  }>>([]);
   const [model, setModel] = useState<use.UniversalSentenceEncoder | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const resultsPerPage = 5;
 
   useEffect(() => {
     use.load().then(setModel);
@@ -26,6 +86,7 @@ function App() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
       const res = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/scrape`,
@@ -40,12 +101,14 @@ function App() {
       if (model) {
         const embeddings = await model.embed([data.title]);
         const category = await categorizeData(embeddings);
-        setResult({ ...data, category });
+        setResults(prev => [...prev, { ...data, category }]);
       } else {
-        setResult(data);
+        setResults(prev => [...prev, data]);
       }
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -80,6 +143,11 @@ function App() {
     });
   };
 
+  const paginatedResults = results.slice(
+    (currentPage - 1) * resultsPerPage,
+    currentPage * resultsPerPage
+  );
+
   return (
     <div className="flex flex-col items-center justify-center">
       <h1 className="text-4xl font-bold mb-8">Web scraper</h1>
@@ -104,26 +172,39 @@ function App() {
           Scrape
         </button>
       </form>
-      {result && (
-        <div className="shadow-md rounded-lg p-6 mt-8 w-96">
-          <h2 className="text-xl font-semibold mb-4">Scraped Data</h2>
-          <table className="table-auto w-full border-collapse">
-            <tbody>
-              <tr className="border-b border-customLime">
-                <td className="font-semibold p-2">Title</td>
-                <td className="p-2">{result.title}</td>
-              </tr>
-              <tr className="border-b border-customLime">
-                <td className="font-semibold p-2">URL</td>
-                <td className="p-2">{result.url}</td>
-              </tr>
-              <tr className="border-b border-customLime">
-                <td className="font-semibold p-2">Category</td>
-                <td className="p-2">{result.category}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+      {isLoading ? (
+        <SkeletonLoader />
+      ) : (
+        <>
+          {paginatedResults.map((result, index) => (
+            <div key={index} className="shadow-md rounded-lg p-6 mt-8 w-96">
+              <h2 className="text-xl font-semibold mb-4">Scraped Data</h2>
+              <table className="table-auto w-full border-collapse">
+                <tbody>
+                  <tr className="border-b border-customLime">
+                    <td className="font-semibold p-2">Title</td>
+                    <td className="p-2">{result.title}</td>
+                  </tr>
+                  <tr className="border-b border-customLime">
+                    <td className="font-semibold p-2">URL</td>
+                    <td className="p-2">{result.url}</td>
+                  </tr>
+                  <tr className="border-b border-customLime">
+                    <td className="font-semibold p-2">Category</td>
+                    <td className="p-2">{result.category}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          ))}
+          <Pagination
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            totalResults={results.length}
+            resultsPerPage={resultsPerPage}
+          />
+          <Dashboard results={results} />
+        </>
       )}
     </div>
   );
