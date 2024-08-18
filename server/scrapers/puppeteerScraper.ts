@@ -7,7 +7,7 @@ import mongoose from "mongoose";
 
 puppeteer.use(StealthPlugin());
 
-export const puppeteerScraper = async (url: string): Promise<{ title: string; description: string; url: string; products: { name: string; category: string }[] } | undefined> => {
+export const puppeteerScraper = async (url: string): Promise<{ title: string; description: string; url: string; products: { name: string; category: string }[]; html: string } | undefined> => {
   const browser = await puppeteer.launch({ headless: true });
   const page = await browser.newPage();
 
@@ -23,6 +23,7 @@ export const puppeteerScraper = async (url: string): Promise<{ title: string; de
 
     const title = await page.title();
     const description = await page.$eval('meta[name="description"]', (element) => element.getAttribute("content") || "");
+    const html = await page.content();
 
     // Extract product data
     const products = await page.evaluate(() => {
@@ -44,12 +45,13 @@ export const puppeteerScraper = async (url: string): Promise<{ title: string; de
       title,
       description,
       url,
-      products
+      products,
+      html
     });
     await data.save();
     console.log("Data saved to MongoDB");
 
-    return { title, description, url, products };
+    return { title, description, url, products, html };
 
   } catch (error) {
     if (error instanceof Error) {
