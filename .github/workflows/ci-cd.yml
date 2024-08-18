@@ -11,12 +11,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Use Node.js
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v3
       with:
-        node-version: '16'
+        node-version: '20'
+
+    - name: Clear npm cache
+      run: npm cache clean --force
 
     - name: Install dependencies
       run: |
@@ -25,6 +28,11 @@ jobs:
         npm install @tensorflow/tfjs @tensorflow-models/universal-sentence-encoder
         cd ../server
         npm ci
+
+    - name: Debug npm
+      run: |
+        cd client
+        npm list
 
     - name: Build client
       run: |
