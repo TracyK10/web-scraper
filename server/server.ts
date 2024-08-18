@@ -3,6 +3,7 @@ import { collectData } from "./data/dataCollector";
 import mongoose from "mongoose";
 import express from "express";
 import cors from "cors";
+import historyRoutes from "./routes/historyRoutes";
 
 // Load environment variables
 config();
@@ -33,6 +34,10 @@ mongoose.connect(mongoURI, {
 // Middleswares
 app.use(cors());
 app.use(express.json());
+
+// Routes
+app.use(express.urlencoded({ extended: false }));
+app.use("/api/history", historyRoutes);
 
 // API endpoint to handle URL submissions
 app.post("/api/scrape", async (req, res) => {
