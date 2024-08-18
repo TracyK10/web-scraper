@@ -22,6 +22,7 @@ jobs:
       run: |
         cd client
         npm ci
+        npm install @tensorflow/tfjs @tensorflow-models/universal-sentence-encoder
         cd ../server
         npm ci
 
