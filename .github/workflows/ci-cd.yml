@@ -2,47 +2,37 @@ name: CI/CD
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
   pull_request:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v2
 
-    - name: Use Node.js
-      uses: actions/setup-node@v3
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
       with:
-        node-version: '20'
+        node-version: '14'
 
-    - name: Clear npm cache
-      run: npm cache clean --force
-
-    - name: Install dependencies
+    - name: Install dependencies for client
       run: |
         cd client
         npm ci
-        npm install @tensorflow/tfjs @tensorflow-models/universal-sentence-encoder
-        cd ../server
-        npm ci
-
-    - name: Debug npm
-      run: |
-        cd client
-        npm list
 
     - name: Build client
       run: |
         cd client
         npm run build
 
-        
     - name: Deploy to GitHub Pages
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      uses: peaceiris/actions-gh-pages@v3
+      uses: ./.github/actions/deploy
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./client/dist

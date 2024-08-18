@@ -1,0 +1,21 @@
+name: 'Deploy to GitHub Pages'
+description: 'Deploy the build output to GitHub Pages'
+inputs:
+  github_token:
+    description: 'GitHub Token'
+    required: true
+  publish_dir:
+    description: 'Directory to publish'
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Deploy to GitHub Pages
+      run: ./deploy.sh
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.github_token }}
+        PUBLISH_DIR: ${{ inputs.publish_dir }}
