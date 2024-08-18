@@ -1,23 +1,31 @@
-import { useState } from 'react'
-import axios from "axios"
-import './App.css'
+import { useState } from "react";
+import axios from "axios";
+import "./App.css";
 
 function App() {
   const [url, setUrl] = useState("");
   const [result, setResult] = useState<{
     title: string;
     url: string;
-  } | null>(null)
+  } | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    try{
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/scrape`, { url });
-      setResult(res.data)
-    } catch(error) {
-      console.error(error)
+    e.preventDefault();
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/scrape`,
+        { url },
+        {
+          headers: {
+            'Authorization': `Bearer ${import.meta.env.VITE_API_KEY}`
+          }
+        }
+      );
+      setResult(res.data);
+    } catch (error) {
+      console.error(error);
     }
-  }
+  };
 
   return (
     <div className="flex flex-col items-center justify-center">
@@ -66,4 +74,4 @@ function App() {
   );
 }
 
-export default App
+export default App;

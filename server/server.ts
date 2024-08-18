@@ -37,9 +37,14 @@ app.use(express.json());
 // API endpoint to handle URL submissions
 app.post("/api/scrape", async (req, res) => {
   const { url } = req.body;
+  const apiKey = req.headers.authorization?.split(" ")[1];
 
   if (!url) {
     return res.status(400).json({ message: "URL is required" });
+  }
+
+  if (apiKey !== process.env.API_KEY) {
+    return res.status(401).json({ message: "Unauthorized" });
   }
 
   try {
