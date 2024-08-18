@@ -1,5 +1,6 @@
 import { config } from "dotenv";
 import { collectData } from "./data/dataCollector";
+import * as cheerio from "cheerio";
 import mongoose from "mongoose";
 import express from "express";
 import cors from "cors";

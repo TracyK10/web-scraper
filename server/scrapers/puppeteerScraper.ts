@@ -1,5 +1,6 @@
 import puppeteer from "puppeteer-extra";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
+import * as cheerio from "cheerio";
 import { randomDelay } from "../utils/randomDelay";
 import { getRandomUserAgent } from "../utils/userAgent";
 import { Data } from "../models/Data";
@@ -21,18 +22,18 @@ export const puppeteerScraper = async (url: string): Promise<{ title: string; de
       return;
     }
 
-    const title = await page.title();
-    const description = await page.$eval('meta[name="description"]', (element) => element.getAttribute("content") || "");
     const html = await page.content();
+    const $ = cheerio.load(html);
+
+    const title = $('title').text();
+    const description = $('meta[name="description"]').attr('content') || "";
+
 
     // Extract product data
-    const products = await page.evaluate(() => {
-      const items = Array.from(document.querySelectorAll('.product-item'));
-      return items.map(item => ({
-        name: item.querySelector('.product-name')?.textContent || '',
-        category: item.querySelector('.product-category')?.textContent || ''
-      }));
-    });
+    const products = $('.product-item').map((_, element) => ({
+      name: $(element).find('.product-name').text(),
+      category: $(element).find('.product-category').text()
+    })).get();
 
     console.log("Title:", title);
     console.log("Description:", description);
