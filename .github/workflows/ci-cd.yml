@@ -42,7 +42,9 @@ jobs:
         
     - name: Deploy to GitHub Pages
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      uses: ./.github/actions/deploy
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./client/dist
+      run: |
+        cd client
+        npm install -g gh-pages
+        gh-pages -d dist
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
