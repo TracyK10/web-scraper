@@ -39,6 +39,11 @@ jobs:
         cd client
         npm run build
 
+    - name: Configure git
+      run: |
+        git config --global user.email "muneneaddy@gmail.com"
+        git config --global user.name "addymwenda12"
+
         
     - name: Deploy to GitHub Pages
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
