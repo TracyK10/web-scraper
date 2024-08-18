@@ -250,6 +250,7 @@ function App() {
                   totalResults={results.length}
                   resultsPerPage={resultsPerPage}
                 />
+                <Dashboard results={results} />
               </div>
             )}
           </>
