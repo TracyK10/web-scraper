@@ -1,8 +1,9 @@
 import { puppeteerScraper } from '../scrapers/puppeteerScraper';
 
-export async function collectData(url: string): Promise<void> {
+export async function collectData(url: string) {
   try {
-    await puppeteerScraper(url);
+    const data = await puppeteerScraper(url);
+    return data;
   } catch (error) {
     if (error instanceof Error) {
       console.error("Data collector error:", error.message);

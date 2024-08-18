@@ -7,7 +7,7 @@ import mongoose from "mongoose";
 
 puppeteer.use(StealthPlugin());
 
-export const puppeteerScraper = async (url: string): Promise<void> => {
+export const puppeteerScraper = async (url: string): Promise<{ title: string; description: string; url: string } | undefined> => {
   const browser = await puppeteer.launch({ headless: true });
   const page = await browser.newPage();
 
@@ -22,7 +22,7 @@ export const puppeteerScraper = async (url: string): Promise<void> => {
     }
 
     const title = await page.title();
-    const description = await page.$eval('meta[name="description"]', (element) => element.getAttribute("content"));
+    const description = await page.$eval('meta[name="description"]', (element) => element.getAttribute("content") || "");
 
     console.log("Title:", title);
     console.log("Description:", description);
@@ -37,6 +37,8 @@ export const puppeteerScraper = async (url: string): Promise<void> => {
     });
     await data.save();
     console.log("Data saved to MongoDB");
+
+    return { title, description, url };
 
   } catch (error) {
     if (error instanceof Error) {
