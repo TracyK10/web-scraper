@@ -7,7 +7,7 @@ import mongoose from "mongoose";
 
 puppeteer.use(StealthPlugin());
 
-export const puppeteerScraper = async (url: string): Promise<{ title: string; description: string; url: string } | undefined> => {
+export const puppeteerScraper = async (url: string): Promise<{ title: string; description: string; url: string; products: { name: string; category: string }[] } | undefined> => {
   const browser = await puppeteer.launch({ headless: true });
   const page = await browser.newPage();
 
@@ -24,8 +24,18 @@ export const puppeteerScraper = async (url: string): Promise<{ title: string; de
     const title = await page.title();
     const description = await page.$eval('meta[name="description"]', (element) => element.getAttribute("content") || "");
 
+    // Extract product data
+    const products = await page.evaluate(() => {
+      const items = Array.from(document.querySelectorAll('.product-item'));
+      return items.map(item => ({
+        name: item.querySelector('.product-name')?.textContent || '',
+        category: item.querySelector('.product-category')?.textContent || ''
+      }));
+    });
+
     console.log("Title:", title);
     console.log("Description:", description);
+    console.log("Products:", products);
 
     await randomDelay(Number(process.env.MIN_DELAY), Number(process.env.MAX_DELAY));
 
@@ -34,11 +44,12 @@ export const puppeteerScraper = async (url: string): Promise<{ title: string; de
       title,
       description,
       url,
+      products
     });
     await data.save();
     console.log("Data saved to MongoDB");
 
-    return { title, description, url };
+    return { title, description, url, products };
 
   } catch (error) {
     if (error instanceof Error) {
