@@ -71,7 +71,7 @@ The final level focuses on automating the deployment process. A Continuous Integ
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/web-scraper.git
+   git clone https://github.com/TracyK10/web-scraper.git
    cd web-scraper
    ```
 
