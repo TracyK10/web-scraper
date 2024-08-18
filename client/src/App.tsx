@@ -122,7 +122,7 @@ function App() {
       const data = res.data;
       setHtmlContent(data.html);
       if (model) {
-        const embeddings = await model.embed([data.title]);
+        const embeddings = await model.embed([data.title]) as tf.Tensor<tf.Rank>;
         const category = await categorizeData(embeddings);
         setResults((prev) => [...prev, { ...data, category }]);
       } else {
