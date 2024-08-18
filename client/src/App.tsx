@@ -118,6 +118,7 @@ function App() {
       );
       console.log("API Response:", res.data); // Check API response
       const data = res.data;
+      setHtmlContent(data.html);
       if (model) {
         const embeddings = await model.embed([data.title]);
         const category = await categorizeData(embeddings);
