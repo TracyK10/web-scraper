@@ -59,7 +59,9 @@ const Dashboard = ({ results }: { results: Array<{ category: string }> }) => {
 
   return (
     <div className="mt-8">
-      <h2 className="text-2xl font-bold mb-4 text-gray-800">Analytics Dashboard</h2>
+      <h2 className="text-2xl font-bold mb-4 text-gray-800">
+        Analytics Dashboard
+      </h2>
       <div className="grid grid-cols-2 gap-4">
         <div className="bg-white shadow-md p-4 rounded-lg">
           <h3 className="text-xl font-semibold mb-2">Total Scrapes</h3>
@@ -92,7 +94,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [showHistory, setShowHistory] = useState(false);
-  const [htmlContent, setHtmlContent] = useState("");
+  const [, setHtmlContent] = useState("");
   const resultsPerPage = 5;
 
   useEffect(() => {
@@ -225,7 +227,9 @@ function App() {
                       key={index}
                       className="shadow-md rounded-lg p-6 mt-8 w-full max-w-md bg-white"
                     >
-                      <h2 className="text-xl font-semibold mb-4">Scraped Data</h2>
+                      <h2 className="text-xl font-semibold mb-4">
+                        Scraped Data
+                      </h2>
                       <table className="table-auto w-full border-collapse">
                         <tbody>
                           <tr className="border-b border-gray-300">
@@ -252,13 +256,17 @@ function App() {
                           <tr className="border-b border-gray-300">
                             <td className="font-semibold p-2">Products:</td>
                             <td className="p-2">
-                              <ul className="list-disc pl-4">
-                                {result.products.map((product, i) => (
-                                  <li key={i}>
-                                    {product.name} ({product.category})
-                                  </li>
-                                ))}
-                              </ul>
+                              {result.products ? (
+                                <ul className="list-disc pl-4">
+                                  {result.products.map((product, i) => (
+                                    <li key={i}>
+                                      {product.name} ({product.category})
+                                    </li>
+                                  ))}
+                                </ul>
+                              ) : (
+                                <p>No products available</p>
+                              )}
                             </td>
                           </tr>
                         </tbody>
