@@ -92,6 +92,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [showHistory, setShowHistory] = useState(false);
+  const [htmlContent, setHtmlContent] = useState("");
   const resultsPerPage = 5;
 
   useEffect(() => {
@@ -101,6 +102,7 @@ function App() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setHtmlContent("");
     try {
       const res = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/scrape`,
@@ -222,6 +224,14 @@ function App() {
                   </table>
                 </div>
               ))}
+              <div className="mt-8 w-full max-w-4xl">
+                <h2 className="text-xl font-semibold mb-4">Page Content</h2>
+                <iframe
+                  srcDoc={htmlContent}
+                  title="Scraped Page Content"
+                  className="w-full h-96 border border-customLime rounded"
+                />
+              </div>
               <Pagination
                 currentPage={currentPage}
                 setCurrentPage={setCurrentPage}
