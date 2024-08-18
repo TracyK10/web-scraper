@@ -122,7 +122,7 @@ function App() {
       const data = res.data;
       setHtmlContent(data.html);
       if (model) {
-        const embeddings = await model.embed([data.title]) as tf.Tensor<tf.Rank>;
+        const embeddings = await model.embed([data.title]) as unknown as tf.Tensor<tf.Rank>;
         const category = await categorizeData(embeddings);
         setResults((prev) => [...prev, { ...data, category }]);
       } else {
@@ -138,7 +138,7 @@ function App() {
   const categorizeData = async (embeddings: tf.Tensor) => {
     const categoryEmbeddings = await Promise.all(
       Object.entries(categories).map(async ([category, examples]) => {
-        const exampleEmbeddings = await model!.embed(examples);
+        const exampleEmbeddings = await model!.embed(examples) as unknown as tf.Tensor<tf.Rank>;
         console.log(
           `Category: ${category}, Example Embeddings:`,
           exampleEmbeddings
@@ -210,83 +210,47 @@ function App() {
               />
               <button
                 type="submit"
-                className="bg-dark-blue text-white p-2 rounded-lg hover:bg-blue-700"
+                className="bg-dark-blue text-white p-2 rounded-lg w-full hover:bg-blue-700"
               >
-                Scrape
+                {isLoading ? "Loading..." : "Scrape"}
               </button>
             </form>
             {isLoading ? (
               <SkeletonLoader />
             ) : (
-              <>
-                {paginatedResults.length === 0 ? (
-                  <p className="text-gray-700">No results found.</p>
-                ) : (
-                  paginatedResults.map((result, index) => (
-                    <div
-                      key={index}
-                      className="shadow-md rounded-lg p-6 mt-8 w-full max-w-md bg-white"
-                    >
-                      <h2 className="text-xl font-semibold mb-4">
-                        Scraped Data
-                      </h2>
-                      <table className="table-auto w-full border-collapse">
-                        <tbody>
-                          <tr className="border-b border-gray-300">
-                            <td className="font-semibold p-2">Title:</td>
-                            <td className="p-2">{result.title}</td>
-                          </tr>
-                          <tr className="border-b border-gray-300">
-                            <td className="font-semibold p-2">URL:</td>
-                            <td className="p-2">
-                              <a
-                                href={result.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-blue-500 hover:underline"
-                              >
-                                {result.url}
-                              </a>
-                            </td>
-                          </tr>
-                          <tr className="border-b border-gray-300">
-                            <td className="font-semibold p-2">Category:</td>
-                            <td className="p-2">{result.category}</td>
-                          </tr>
-                          <tr className="border-b border-gray-300">
-                            <td className="font-semibold p-2">Products:</td>
-                            <td className="p-2">
-                              {result.products ? (
-                                <ul className="list-disc pl-4">
-                                  {result.products.map((product, i) => (
-                                    <li key={i}>
-                                      {product.name} ({product.category})
-                                    </li>
-                                  ))}
-                                </ul>
-                              ) : (
-                                <p>No products available</p>
-                              )}
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                      <iframe
-                        src={result.url}
-                        className="w-full h-96 mt-4 border border-gray-300 rounded-lg"
-                        title="Webpage Preview"
-                      ></iframe>
+              <div className="mt-8 w-full">
+                {paginatedResults.map((result, index) => (
+                  <div
+                    key={index}
+                    className="bg-white shadow-md p-4 rounded-lg mb-4"
+                  >
+                    <h3 className="text-xl font-semibold mb-2">{result.title}</h3>
+                    <p className="text-gray-700 mb-2">{result.url}</p>
+                    <p className="text-gray-700 mb-2">
+                      Category: {result.category}
+                    </p>
+                    <div className="grid grid-cols-2 gap-4">
+                      {result.products.map((product, idx) => (
+                        <div
+                          key={idx}
+                          className="bg-gray-100 p-2 rounded-lg shadow-sm"
+                        >
+                          <p className="text-gray-700">{product.name}</p>
+                          <p className="text-gray-500 text-sm">
+                            {product.category}
+                          </p>
+                        </div>
+                      ))}
                     </div>
-                  ))
-                )}
+                  </div>
+                ))}
                 <Pagination
                   currentPage={currentPage}
                   setCurrentPage={setCurrentPage}
                   totalResults={results.length}
                   resultsPerPage={resultsPerPage}
                 />
-                <Dashboard results={results} />
-              </>
+              </div>
             )}
           </>
         )}
