@@ -12,7 +12,7 @@ function App() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try{
-      const res = await axios.post("/api/scrape", {url})
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/scrape`, { url });
       setResult(res.data)
     } catch(error) {
       console.error(error)
