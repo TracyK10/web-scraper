@@ -38,6 +38,7 @@ export const puppeteerScraper = async (url: string): Promise<{ title: string; de
     console.log("Title:", title);
     console.log("Description:", description);
     console.log("Products:", products);
+    console.log("HTML:", html);
 
     await randomDelay(Number(process.env.MIN_DELAY), Number(process.env.MAX_DELAY));
 

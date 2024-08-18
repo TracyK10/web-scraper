@@ -114,6 +114,7 @@ function App() {
         }
       );
       const data = res.data;
+      setHtmlContent(data.html);
       if (model) {
         const embeddings = await model.embed([data.title]);
         const category = await categorizeData(embeddings);
@@ -193,6 +194,7 @@ function App() {
               className="w-full p-2 my-2 border border-customLime rounded-lg"
             />
             <button
+              aria-label="Submit URL for scraping"
               type="submit"
               className="border border-customLime text-customLime p-2 rounded-lg"
             >
@@ -230,8 +232,10 @@ function App() {
                   srcDoc={htmlContent}
                   title="Scraped Page Content"
                   className="w-full h-96 border border-customLime rounded"
+                  sandbox="allow-scripts allow-same-origin"
                 />
               </div>
+
               <Pagination
                 currentPage={currentPage}
                 setCurrentPage={setCurrentPage}
