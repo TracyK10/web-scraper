@@ -175,7 +175,7 @@ function App() {
   );
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 ml-80">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
       <header className="w-full bg-dark-blue py-4 shadow-lg">
         <h1 className=" text-4xl font-bold text-center">ScrapeMaster Pro</h1>
       </header>
