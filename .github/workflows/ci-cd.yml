@@ -48,9 +48,9 @@ jobs:
         
       - name: Deploy to GitHub Pages
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cd client
           npm install -g gh-pages
-          gh-pages -d dist -r https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/TracyK10/TracyK10.github.io.git
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          gh-pages -d dist -r https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
