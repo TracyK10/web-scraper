@@ -176,9 +176,9 @@ function App() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
-      <header className="w-full bg-dark-blue py-4 shadow-lg">
+      <nav className="w-full bg-dark-blue py-4 shadow-lg">
         <h1 className=" text-4xl font-bold text-center">ScrapeMaster Pro</h1>
-      </header>
+      </nav>
       <main className="flex flex-col items-center w-full max-w-4xl p-6">
         <button
           onClick={() => setShowHistory(!showHistory)}
